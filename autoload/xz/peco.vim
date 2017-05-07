@@ -14,30 +14,22 @@ let s:Peco = {}
 function s:Peco.new(cmd) dict abort
   return copy(extend(self, {
               \'cmd': a:cmd,
-              \'stadout': []
+              \'tempname': tempname()
               \}))
 endfunction
 
 function s:Peco.run() dict abort
-  termopen(self.cmd . ' | peco', self)
-endfunction
-
-function s:Peco.on_stdout(id, data) dict
-  echomsg join(a:data)
-endfunction
-
-function s:Peco.on_stderr(id, data) dict
-  " no-op
+  let l:cmd = self.cmd . ' | peco >| ' . self.tempname
+  call termopen(l:cmd, self)
 endfunction
 
 function s:Peco.on_exit(id, data) dict
-  " no-op
+  execute ':edit ' . system('cat ' . self.tempname)
 endfunction
 
 
-function! xz#peco#open(cmd)
-  let l:job = s:Peco.new(cmd)
-  call l:job.run()
+function! xz#peco#edit(cmd) abort
+  call s:Peco.new(a:cmd).run()
 endfunction
 
 
