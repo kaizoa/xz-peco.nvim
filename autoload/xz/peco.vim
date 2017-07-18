@@ -20,13 +20,18 @@ endfunction
 
 function s:Peco.run() dict abort
   let l:cmd = self.cmd . ' | peco >| ' . self.tempname
-  call termopen(l:cmd, self)
+  if has('nvim')
+    call termopen(l:cmd, self)
+  else
+    exec 'silent !' . l:cmd
+    exec 'edit ' . system('cat ' . self.tempname)
+    redraw!
+  endif
 endfunction
 
 function s:Peco.on_exit(id, data) dict
   execute ':edit ' . system('cat ' . self.tempname)
 endfunction
-
 
 function! xz#peco#edit(cmd) abort
   call s:Peco.new(a:cmd).run()
