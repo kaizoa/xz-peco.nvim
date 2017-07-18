@@ -25,6 +25,7 @@ function s:Peco.run() dict abort
   else
     exec 'silent !' . l:cmd
     exec 'edit ' . system('cat ' . self.tempname)
+    redraw!
   endif
 endfunction
 
